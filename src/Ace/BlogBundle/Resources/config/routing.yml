@@ -1,0 +1,3 @@
+ace_blog_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: AceBlogBundle:Default:index }
