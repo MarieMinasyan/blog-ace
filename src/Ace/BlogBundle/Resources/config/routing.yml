@@ -1,3 +1,21 @@
-ace_blog_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: AceBlogBundle:Default:index }
+homepage:
+    pattern:  /
+    defaults: { _controller: AceBlogBundle:Post:index }
+
+users:
+    pattern: /users
+    defaults: { _controller: AceBlogBundle:User:index }
+
+profiles:
+    pattern: /profile
+    defaults: { _controller: AceBlogBundle:User:profile }
+
+login:
+    pattern:   /login
+    defaults:  { _controller: AceBlogBundle:Security:login }
+login_check:
+    pattern:   /login_check
+  
+AceBlogBundle_post:
+   resource: "@AceBlogBundle/Resources/config/routing/post.yml"
+   prefix:   /article

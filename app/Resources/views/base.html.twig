@@ -2,15 +2,32 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}ACE Blog{% endblock %}</title>
+
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
-            <link rel="stylesheet" href="{{ asset('css/responsive.less') }}">
+            <link rel="stylesheet" href="{{ asset('bundles/aceblog/css/blog.css') }}" />
+            {#<link rel="stylesheet" href="{{ asset('css/responsive.less') }}">#}
         {% endblock %}
+
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
+
     <body>
-        {% block body %}{% endblock %}
+        <div class="content">
+
+            <div class="header">
+                <h1>ACE Blog</h1>
+            </div>
+
+            <div class="navbar">
+                <div class="navbar-inner">{{ knp_menu_render('AceBlogBundle:Builder:mainMenu', {'nav_type': 'navbar'}) }}</div>
+            </div>
+
+            {% block body %}{% endblock %}
+
+        </div>
+
         {% block javascripts %}{% endblock %}
     </body>
 </html>

@@ -1,6 +1,6 @@
 <?php
 
-namespace RoleVoters\BlogBundle\Entity;
+namespace Ace\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -96,7 +96,7 @@ class Comment
     }
 
     /**
-     * @param \RoleVoters\BlogBundle\Entity\Post $post
+     * @param \Ace\BlogBundle\Entity\Post $post
      */
     public function setPost($post)
     {
@@ -104,7 +104,7 @@ class Comment
     }
 
     /**
-     * @return \RoleVoters\BlogBundle\Entity\Post
+     * @return \Ace\BlogBundle\Entity\Post
      */
     public function getPost()
     {
@@ -112,7 +112,7 @@ class Comment
     }
 
     /**
-     * @param \RoleVoters\BlogBundle\Entity\User $user
+     * @param \Ace\BlogBundle\Entity\User $user
      */
     public function setUser($user)
     {
@@ -120,7 +120,7 @@ class Comment
     }
 
     /**
-     * @return \RoleVoters\BlogBundle\Entity\User
+     * @return \Ace\BlogBundle\Entity\User
      */
     public function getUser()
     {

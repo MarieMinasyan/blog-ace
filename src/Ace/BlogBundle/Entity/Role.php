@@ -1,6 +1,6 @@
 <?php
 
-namespace RoleVoters\BlogBundle\Entity;
+namespace Ace\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace RoleVoters\BlogBundle\Entity;
+namespace Ace\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -53,6 +53,13 @@ class Post
      * @ORM\Column(name="created_at", type="datetime")
      */
     private $created_at;
+
+    /**
+     * @var array
+     *
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="post")
+     */
+    private $comments;
 
     /**
      * __construct
@@ -119,7 +126,7 @@ class Post
     }
 
     /**
-     * @param \RoleVoters\BlogBundle\Entity\User $user
+     * @param \Ace\BlogBundle\Entity\User $user
      */
     public function setUser($user)
     {
@@ -127,7 +134,7 @@ class Post
     }
 
     /**
-     * @return \RoleVoters\BlogBundle\Entity\User
+     * @return \Ace\BlogBundle\Entity\User
      */
     public function getUser()
     {
@@ -148,5 +155,21 @@ class Post
     public function getCreatedAt()
     {
         return $this->created_at;
+    }
+
+    /**
+     * @param array $comments
+     */
+    public function setComments($comments)
+    {
+        $this->comments = $comments;
+    }
+
+    /**
+     * @return array
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }
