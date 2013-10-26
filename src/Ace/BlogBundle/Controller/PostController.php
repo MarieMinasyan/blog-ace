@@ -23,10 +23,16 @@ class PostController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('AceBlogBundle:Post')->findAll();
+        $query = $em->createQuery('SELECT a FROM AceBlogBundle:Post a');
 
-        return $this->render('AceBlogBundle:Post:index.html.twig', array(
-            'entities' => $entities,
-        ));
+        $paginator  = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query,
+            $this->get('request')->query->get('page', 1) /*page number*/,
+            10 /*limit per page*/
+        );
+
+        return $this->render('AceBlogBundle:Post:index.html.twig', array('pagination' => $pagination));
     }
     /**
      * Creates a new Post entity.
