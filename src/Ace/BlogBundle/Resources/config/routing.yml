@@ -1,21 +1,29 @@
-homepage:
-    pattern:  /
+post:
+    path:  /
     defaults: { _controller: AceBlogBundle:Post:index }
 
 users:
-    pattern: /users
+    path: /users
     defaults: { _controller: AceBlogBundle:User:index }
 
-profiles:
-    pattern: /profile
+profile:
+    path: /profile
     defaults: { _controller: AceBlogBundle:User:profile }
 
 login:
-    pattern:   /login
+    path:   /login
     defaults:  { _controller: AceBlogBundle:Security:login }
+
 login_check:
-    pattern:   /login_check
+    path:   /profile/login_check
+
+logout:
+    path:   /profile/logout
   
 AceBlogBundle_post:
-   resource: "@AceBlogBundle/Resources/config/routing/post.yml"
-   prefix:   /article
+    resource: "@AceBlogBundle/Resources/config/routing/post.yml"
+    prefix:   /post
+
+AceBlogBundle_user:
+    resource: "@AceBlogBundle/Resources/config/routing/user.yml"
+    prefix:   /user

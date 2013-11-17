@@ -1,9 +1,11 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Post creation</h1>
+
+    <a href="{{ path('user') }}"><< Back to the list</a>
+
+    <h1>User creation</h1>
 
     {{ form(form) }}
 
-    <a href="{{ path('post') }}"><< Back to the list</a>
 {% endblock %}

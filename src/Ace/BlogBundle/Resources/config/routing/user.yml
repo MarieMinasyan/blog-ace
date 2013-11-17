@@ -1,0 +1,29 @@
+user:
+    pattern:  /
+    defaults: { _controller: "AceBlogBundle:User:index" }
+
+user_show:
+    pattern:  /show/{id}
+    defaults: { _controller: "AceBlogBundle:User:show" }
+
+user_new:
+    pattern:  /new
+    defaults: { _controller: "AceBlogBundle:User:new" }
+
+user_create:
+    pattern:  /create
+    defaults: { _controller: "AceBlogBundle:User:create" }
+    requirements: { _method: post }
+
+user_edit:
+    pattern:  /edit/{id}
+    defaults: { _controller: "AceBlogBundle:User:edit" }
+
+user_update:
+    pattern:  /update/{id}
+    defaults: { _controller: "AceBlogBundle:User:update" }
+    requirements: { _method: post|put }
+
+user_delete:
+    pattern:  /delete/{id}
+    defaults: { _controller: "AceBlogBundle:User:delete" }

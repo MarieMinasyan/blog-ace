@@ -1,0 +1,12 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+
+    <a href="{{ path('user') }}"><< Back to the list</a>
+
+    <h1>User edit</h1>
+
+    {{ form(edit_form) }}
+
+
+{% endblock %}

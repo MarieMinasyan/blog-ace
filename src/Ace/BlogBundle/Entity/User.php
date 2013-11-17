@@ -48,7 +48,7 @@ class User implements UserInterface, \Serializable
      *
      * @ORM\ManyToMany(targetEntity="Role")
      */
-    private $roles;
+    private $userRoles;
 
     /**
      * @var array
@@ -63,6 +63,11 @@ class User implements UserInterface, \Serializable
      * @ORM\OneToMany(targetEntity="Comment", mappedBy="user")
      */
     private $comments;
+
+    public function __construct()
+    {
+        $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+    }
 
     /**
      * Get id
@@ -171,9 +176,14 @@ class User implements UserInterface, \Serializable
     /**
      * @param array $roles
      */
-    public function setRoles($roles)
+    public function setUserRoles($roles)
     {
-        $this->roles = $roles;
+        $this->userRoles = $roles;
+    }
+
+    public function getUserRoles()
+    {
+        return $this->userRoles;
     }
 
     /**
@@ -181,7 +191,7 @@ class User implements UserInterface, \Serializable
      */
     public function getRoles()
     {
-        return $this->roles->toArray();
+        return $this->userRoles->toArray();
     }
 
     /**

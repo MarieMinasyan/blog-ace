@@ -1,0 +1,33 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>User list</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td><a href="{{ path('user_show', { 'id': entity.id }) }}">{{ entity.username }}</a></td>
+                <td>
+                    <a href="{{ path('user_show', { 'id': entity.id }) }}">Show</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <br/><a href="{{ path('user_edit', { 'id': entity.id }) }}">Edit user</a>
+                        <br/><a href="{{ path('user_delete', { 'id': entity.id }) }}">Delete user</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <a class="btn btn-primary" href="{{ path('user_new') }}">Create a new entry</a>
+    {% endif %}
+
+{% endblock %}

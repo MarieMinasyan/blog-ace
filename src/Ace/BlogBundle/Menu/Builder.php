@@ -21,12 +21,13 @@ class Builder extends ContainerAware
     {
         $menu = $factory->createItem('root');
 
-        $menu->addChild('Articles', array('route' => 'homepage'));
+        $menu->addChild('Articles', array('route' => 'post'));
         $menu->addChild('Users', array('route' => 'users'));
 
         if ($this->container->get('security.context')->getToken() instanceof TokenInterface &&
             $this->container->get('security.context')->getToken()->getUser() instanceof User) {
             $menu->addChild('My profile', array('route' => 'profile'));
+            $menu->addChild('Logout', array('route' => 'logout'));
         }
 
         return $menu;

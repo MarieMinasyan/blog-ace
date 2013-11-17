@@ -22,7 +22,6 @@ class PostController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('AceBlogBundle:Post')->findAll();
         $query = $em->createQuery('SELECT a FROM AceBlogBundle:Post a');
 
         $paginator  = $this->get('knp_paginator');

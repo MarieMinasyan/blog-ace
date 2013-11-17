@@ -1,7 +1,7 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Articles</h1>
+    <h1>Posts</h1>
 
     <table class="table">
         {# table body #}
@@ -19,6 +19,10 @@
         {{ knp_pagination_render(pagination) }}
     </div>
 
-    <a class="button" href="{{ path('post_new') }}">Create a new acticle</a>
+    {% if is_granted('ROLE_USER') %}
+        <a class="btn btn-primary" href="{{ path('post_new') }}">Create a new article</a>
+    {% else %}
+        <a class="btn btn-primary" href="{{ path('login') }}">Login</a>
+    {% endif %}
 
 {% endblock %}

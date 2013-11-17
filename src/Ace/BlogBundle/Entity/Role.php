@@ -3,6 +3,7 @@
 namespace Ace\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\Role\RoleInterface;
 
 /**
  * Role
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="role")
  * @ORM\Entity
  */
-class Role
+class Role implements RoleInterface
 {
     /**
      * @var integer
@@ -48,6 +49,16 @@ class Role
      * @return string
      */
     public function getName()
+    {
+        return $this->name;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    public function getRole()
     {
         return $this->name;
     }

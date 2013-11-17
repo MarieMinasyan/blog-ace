@@ -1,26 +1,26 @@
 post_show:
-    pattern:  /{id}/show
+    path:     /show/{id}
     defaults: { _controller: AceBlogBundle:Post:show }
 
 post_new:
-    pattern:  /new
+    path:     /new
     defaults: { _controller: AceBlogBundle:Post:new }
 
 post_create:
-    pattern:  /create
+    path:     /create
     defaults: { _controller: AceBlogBundle:Post:create }
     requirements: { _method: post }
 
 post_edit:
-    pattern:  /{id}/edit
+    path:     /edit/{id}
     defaults: { _controller: AceBlogBundle:Post:edit }
 
 post_update:
-    pattern:  /{id}/update
+    path:     /update/{id}
     defaults: { _controller: AceBlogBundle:Post:update }
     requirements: { _method: post|put }
 
 post_delete:
-    pattern:  /{id}/delete
+    path:     /delete/{id}
     defaults: { _controller: AceBlogBundle:Post:delete }
     requirements: { _method: post|delete }

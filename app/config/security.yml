@@ -4,7 +4,6 @@ security:
             algorithm:        sha1
             encode_as_base64: false
             iterations:       1
-#        Symfony\Component\Security\Core\User\User: plaintext
 
     role_hierarchy:
         ROLE_ADMIN:       ROLE_USER
@@ -13,29 +12,27 @@ security:
     providers:
         users:
             entity: { class: AceBlogBundle:User, property: username }
-#        in_memory:
-#            memory:
-#                users:
-#                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-#                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
 
     firewalls:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        login:
-            pattern:  ^/demo/secured/login$
-            security: false
-
-        secured_area:
-            pattern:    ^/profile
-            anonymous: ~
+        secured:
+            pattern: ^/
+            anonymous: true
             form_login:
-                login_path:  login
-                check_path:  login_check
+                login_path: login
+                check_path: login_check
+                always_use_default_target_path: true
+                default_target_path: /profile
+            logout:
+                path: logout
+                target: /
 
     access_control:
+        - { path: ^/,       roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/post/show$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/post/$, roles: ROLE_USER }
         - { path: ^/profile$, roles: ROLE_USER }
-        - { path: ^/article/show, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
