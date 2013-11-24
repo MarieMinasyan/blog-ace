@@ -1,0 +1,29 @@
+comment:
+    pattern:  /
+    defaults: { _controller: "AceBlogBundle:Comment:index" }
+
+comment_show:
+    pattern:  /{id}/show
+    defaults: { _controller: "AceBlogBundle:Comment:show" }
+
+comment_new:
+    pattern:  /new
+    defaults: { _controller: "AceBlogBundle:Comment:new" }
+
+comment_create:
+    pattern:  /create
+    defaults: { _controller: "AceBlogBundle:Comment:create" }
+    requirements: { _method: post }
+
+comment_edit:
+    pattern:  /{postId}/{id}/edit
+    defaults: { _controller: "AceBlogBundle:Comment:edit" }
+
+comment_update:
+    pattern:  /{postId}/{id}/update
+    defaults: { _controller: "AceBlogBundle:Comment:update" }
+    requirements: { _method: post|put }
+
+comment_delete:
+    pattern:  /{postId}/{id}/delete
+    defaults: { _controller: "AceBlogBundle:Comment:delete" }

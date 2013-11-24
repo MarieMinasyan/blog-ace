@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Role\RoleInterface;
  * @ORM\Table(name="role")
  * @ORM\Entity
  */
-class Role implements RoleInterface
+class Role extends \Symfony\Component\Security\Core\Role\Role
 {
     /**
      * @var integer

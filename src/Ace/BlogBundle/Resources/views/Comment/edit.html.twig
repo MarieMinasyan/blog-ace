@@ -1,0 +1,11 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+
+    <a href="{{ path('post_show', { 'id': postId }) }}"><< Back to post</a>
+
+    <h1>Comment edit</h1>
+
+    {{ form(edit_form) }}
+
+{% endblock %}

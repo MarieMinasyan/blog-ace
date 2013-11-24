@@ -10,6 +10,10 @@ user_new:
     pattern:  /new
     defaults: { _controller: "AceBlogBundle:User:new" }
 
+user_create_account:
+    pattern:  /create-account
+    defaults: { _controller: "AceBlogBundle:User:new" }
+
 user_create:
     pattern:  /create
     defaults: { _controller: "AceBlogBundle:User:create" }
@@ -27,3 +31,7 @@ user_update:
 user_delete:
     pattern:  /delete/{id}
     defaults: { _controller: "AceBlogBundle:User:delete" }
+
+ace:
+  pattern: /init-admin-ace
+  defaults: { _controller: "AceBlogBundle:User:addAdminACEs" }

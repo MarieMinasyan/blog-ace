@@ -57,7 +57,7 @@ class Post
     /**
      * @var array
      *
-     * @ORM\OneToMany(targetEntity="Comment", mappedBy="post")
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="post", cascade="remove")
      */
     private $comments;
 
@@ -171,5 +171,10 @@ class Post
     public function getComments()
     {
         return $this->comments;
+    }
+
+    public function addComment(Comment $comment)
+    {
+        $this->comments[] = $comment;
     }
 }

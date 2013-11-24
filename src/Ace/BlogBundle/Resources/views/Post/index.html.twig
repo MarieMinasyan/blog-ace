@@ -3,13 +3,17 @@
 {% block body -%}
     <h1>Posts</h1>
 
+    {% if app.user %}
+        <div style="clear: both"><p><a class="btn btn-small btn-info" href="{{ path('post_new') }}">Create a new article</a></p></div>
+    {% endif %}
+
     <table class="table">
         {# table body #}
         {% for article in pagination %}
             <tr {% if loop.index is odd %}class="color"{% endif %}>
                 <td>
                     <a href="{{ path('post_show', { 'id': article.id }) }}"><h2>{{ article.title }}</h2></a>
-                    {{ article.content }}
+                    {{ (article.content|slice(0, 500))~'...' }}
                 </td>
             </tr>
         {% endfor %}
@@ -18,11 +22,5 @@
     <div class="navigation">
         {{ knp_pagination_render(pagination) }}
     </div>
-
-    {% if is_granted('ROLE_USER') %}
-        <a class="btn btn-primary" href="{{ path('post_new') }}">Create a new article</a>
-    {% else %}
-        <a class="btn btn-primary" href="{{ path('login') }}">Login</a>
-    {% endif %}
 
 {% endblock %}

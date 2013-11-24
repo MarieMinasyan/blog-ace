@@ -28,6 +28,9 @@ class Builder extends ContainerAware
             $this->container->get('security.context')->getToken()->getUser() instanceof User) {
             $menu->addChild('My profile', array('route' => 'profile'));
             $menu->addChild('Logout', array('route' => 'logout'));
+        } else {
+            $menu->addChild('Login', array('route' => 'login'));
+            $menu->addChild('Create account', array('route' => 'user_create_account'));
         }
 
         return $menu;

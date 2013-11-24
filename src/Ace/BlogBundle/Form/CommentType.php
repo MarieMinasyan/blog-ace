@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class PostType extends AbstractType
+class CommentType extends AbstractType
 {
         /**
      * @param FormBuilderInterface $builder
@@ -15,8 +15,7 @@ class PostType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title')
-            ->add('content', 'textarea', array('attr' => array('class' => 'big_textarea')))
+            ->add('content', 'textarea', array('required' => true, 'attr' => array('class' => 'small_textarea')))
         ;
     }
     
@@ -26,7 +25,7 @@ class PostType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Ace\BlogBundle\Entity\Post'
+            'data_class' => 'Ace\BlogBundle\Entity\Comment'
         ));
     }
 
@@ -35,6 +34,6 @@ class PostType extends AbstractType
      */
     public function getName()
     {
-        return 'ace_blogbundle_post';
+        return 'ace_blogbundle_comment';
     }
 }

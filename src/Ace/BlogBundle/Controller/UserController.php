@@ -7,6 +7,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Ace\BlogBundle\Entity\User;
 use Ace\BlogBundle\Form\UserType;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
  * User controller.
@@ -40,11 +45,14 @@ class UserController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+
+            // encode password
             $factory = $this->get('security.encoder_factory');
             $encoder = $factory->getEncoder($entity);
             $password = $encoder->encodePassword($form->get('password')->getData(), $entity->getSalt());
             $entity->setPassword($password);
 
+            // save
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
@@ -185,6 +193,12 @@ class UserController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
+
+            $factory = $this->get('security.encoder_factory');
+            $encoder = $factory->getEncoder($entity);
+            $password = $encoder->encodePassword($editForm->get('password')->getData(), $entity->getSalt());
+            $entity->setPassword($password);
+
             $em->flush();
 
             return $this->redirect($this->generateUrl('user_edit', array('id' => $id)));
@@ -212,5 +226,36 @@ class UserController extends Controller
         $em->flush();
 
         return $this->redirect($this->generateUrl('user'));
+    }
+
+    public function addAdminACEsAction()
+    {
+        $aclProvider = $this->get('security.acl.provider');
+
+        // creating the role identity
+        $securityIdentity = new RoleSecurityIdentity('ROLE_ADMIN');
+
+        $classes = array(
+            'Ace\BlogBundle\Entity\User',
+            'Ace\BlogBundle\Entity\Post',
+            'Ace\BlogBundle\Entity\Comment',
+        );
+
+        foreach($classes as $class) {
+            // create acl
+            $objectIdentity = new ObjectIdentity($class, $class);
+
+            try {
+                $acl = $aclProvider->findAcl($objectIdentity);
+            } catch (\Exception $e) {
+                $acl = $aclProvider->createAcl($objectIdentity);
+            }
+
+            // grant master access
+            $acl->insertClassAce($securityIdentity, MaskBuilder::MASK_MASTER);
+            $aclProvider->updateAcl($acl);
+        }
+
+        return new Response('', 200);
     }
 }

@@ -13,3 +13,18 @@ body {
 .header {
 
 }
+
+.big_textarea {
+    width: 95%;
+    height: 350px;
+}
+
+.small_textarea {
+    width: 50%;
+    height: 150px;
+}
+
+.comment {
+    width: 50%;
+    clear: both;
+}

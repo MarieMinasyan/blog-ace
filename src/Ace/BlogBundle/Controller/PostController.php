@@ -2,10 +2,16 @@
 
 namespace Ace\BlogBundle\Controller;
 
+use Ace\BlogBundle\Entity\Comment;
+use Ace\BlogBundle\Form\CommentType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Ace\BlogBundle\Entity\Post;
 use Ace\BlogBundle\Form\PostType;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
  * Post controller.
@@ -13,7 +19,6 @@ use Ace\BlogBundle\Form\PostType;
  */
 class PostController extends Controller
 {
-
     /**
      * Lists all Post entities.
      *
@@ -33,6 +38,7 @@ class PostController extends Controller
 
         return $this->render('AceBlogBundle:Post:index.html.twig', array('pagination' => $pagination));
     }
+
     /**
      * Creates a new Post entity.
      *
@@ -47,6 +53,20 @@ class PostController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
+
+            // creating the ACL
+            $aclProvider = $this->get('security.acl.provider');
+            $objectIdentity = ObjectIdentity::fromDomainObject($entity);
+            $acl = $aclProvider->createAcl($objectIdentity);
+
+            // retrieving the security identity of the currently logged-in user
+            $securityContext = $this->get('security.context');
+            $user = $securityContext->getToken()->getUser();
+            $securityIdentity = UserSecurityIdentity::fromAccount($user);
+
+            // grant owner access
+            $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
+            $aclProvider->updateAcl($acl);
 
             return $this->redirect($this->generateUrl('post_show', array('id' => $entity->getId())));
         }
@@ -95,9 +115,13 @@ class PostController extends Controller
      * Finds and displays a Post entity.
      *
      */
-    public function showAction($id)
+    public function showAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
+
+        $newComment = new Comment();
+        $commentForm   = $this->createNewCommentForm($newComment, $id);
+        $commentForm->handleRequest($request);
 
         $entity = $em->getRepository('AceBlogBundle:Post')->find($id);
 
@@ -105,11 +129,51 @@ class PostController extends Controller
             throw $this->createNotFoundException('Unable to find Post entity.');
         }
 
+        if ($commentForm->isValid()) {
+            $newComment->setPost($entity);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($newComment);
+            $em->flush();
+
+            // creating the ACL
+            $aclProvider = $this->get('security.acl.provider');
+            $objectIdentity = ObjectIdentity::fromDomainObject($newComment);
+            $acl = $aclProvider->createAcl($objectIdentity);
+
+            // retrieving the security identity of the currently logged-in user
+            $securityContext = $this->get('security.context');
+            $user = $securityContext->getToken()->getUser();
+            $securityIdentity = UserSecurityIdentity::fromAccount($user);
+
+            // grant owner access
+            $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
+            $aclProvider->updateAcl($acl);
+        }
+
         $deleteForm = $this->createDeleteForm($id);
 
         return $this->render('AceBlogBundle:Post:show.html.twig', array(
             'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),        ));
+            'delete_form' => $deleteForm->createView(),
+            'comment_form' => $commentForm->createView()
+        ));
+    }
+
+    /**
+     * @param Comment $entity
+     * @param int $postId
+     * @return \Symfony\Component\Form\Form
+     */
+    private function createNewCommentForm(Comment $entity, $postId)
+    {
+        $form = $this->createForm(new CommentType(), $entity, array(
+            'action' => $this->generateUrl('post_show', array('id' => $postId)),
+            'method' => 'POST',
+        ));
+
+        $form->add('submit', 'submit', array('label' => 'Add new comment'));
+
+        return $form;
     }
 
     /**
@@ -184,6 +248,7 @@ class PostController extends Controller
             'delete_form' => $deleteForm->createView(),
         ));
     }
+
     /**
      * Deletes a Post entity.
      *
@@ -200,6 +265,14 @@ class PostController extends Controller
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Post entity.');
             }
+
+            $aclProvider = $this->container->get('security.acl.provider');
+
+            foreach ($entity->getComments() as $comment) {
+                $aclProvider->deleteAcl(ObjectIdentity::fromDomainObject($comment));
+            }
+
+            $aclProvider->deleteAcl(ObjectIdentity::fromDomainObject($entity));
 
             $em->remove($entity);
             $em->flush();

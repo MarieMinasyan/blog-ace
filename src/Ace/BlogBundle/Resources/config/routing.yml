@@ -27,3 +27,7 @@ AceBlogBundle_post:
 AceBlogBundle_user:
     resource: "@AceBlogBundle/Resources/config/routing/user.yml"
     prefix:   /user
+
+AceBlogBundle_comment:
+    resource: "@AceBlogBundle/Resources/config/routing/comment.yml"
+    prefix:   /comment

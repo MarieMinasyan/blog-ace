@@ -220,4 +220,9 @@ class User implements UserInterface, \Serializable
             $this->id,
             ) = unserialize($serialized);
     }
+
+    public function hasRole($role)
+    {
+        return in_array($role, $this->userRoles);
+    }
 }

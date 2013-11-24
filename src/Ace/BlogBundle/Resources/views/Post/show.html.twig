@@ -1,29 +1,46 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Post</h1>
-
-    <table class="record_properties">
-        <tbody>
-            <tr>
-                <th>Title</th>
-                <td>{{ entity.title }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ entity.content }}</td>
-            </tr>
-            <tr>
-                <th>Created_at</th>
-                <td>{{ entity.createdat|date('Y-m-d H:i:s') }}</td>
-            </tr>
-        </tbody>
-    </table>
 
     <a href="{{ path('post') }}"><< Back to the list</a>
 
-    <a href="{{ path('post_edit', { 'id': entity.id }) }}">Edit</a>
-    {{ form(delete_form) }}
+    <h1>{{ entity.title }}</h1>
 
-</ul>
+    <p class="muted">Posted at {{ entity.createdat|date('Y-m-d H:i:s') }} by {{ entity.user.username }}</p>
+
+    <p>{{ entity.content|nl2br }}</p>
+
+    {% if is_granted('EDIT', entity) %}
+        <div>
+            <a class="btn btn-info" href="{{ path('post_edit', { 'id': entity.id }) }}">Edit</a>
+            {{ form(delete_form) }}
+        </div>
+    {% endif %}
+
+    <h3>Comments</h3>
+
+    {% for comment in entity.comments %}
+        <div class="comment">
+            <p class="muted">Posted at {{ comment.createdat|date('Y-m-d H:i:s') }} by {{ comment.user.username }}</p>
+            <p>{{ comment.content|nl2br }}</p>
+
+            <p class="pull-right">
+                {% if is_granted('EDIT', comment) %}
+                    <a class="btn btn-small btn-warning" href="{{ path('comment_edit', { 'id': comment.id, 'postId': entity.id }) }}">Edit comment</a>
+                {% endif %}
+
+                {% if is_granted('DELETE', comment) %}
+                    <a class="btn btn-small btn-danger" href="{{ path('comment_delete', { 'id': comment.id, 'postId': entity.id }) }}">Delete comment</a>
+                {% endif %}
+            </p>
+        </div>
+    {% endfor %}
+
+    {% if app.user %}
+        <div class="comment">
+            <h3>Add a new comment</h3>
+            {{ form(comment_form) }}
+        </div>
+    {% endif %}
+
 {% endblock %}
