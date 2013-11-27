@@ -4,14 +4,14 @@ namespace Ace\BlogBundle\Controller;
 
 use Ace\BlogBundle\Entity\Comment;
 use Ace\BlogBundle\Form\CommentType;
+use Ace\BlogBundle\Security\Acl\MaskBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Ace\BlogBundle\Entity\Post;
 use Ace\BlogBundle\Form\PostType;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
-use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
-use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Post controller.
@@ -56,16 +56,19 @@ class PostController extends Controller
 
             // creating the ACL
             $aclProvider = $this->get('security.acl.provider');
+
+            //parent acl is ROLE_ADMIN that has MASK_MASTER on user class
+            $parentACL = $aclProvider->findAcl(new ObjectIdentity('Ace\BlogBundle\Entity\User', 'Ace\BlogBundle\Entity\User'));
+
             $objectIdentity = ObjectIdentity::fromDomainObject($entity);
             $acl = $aclProvider->createAcl($objectIdentity);
 
             // retrieving the security identity of the currently logged-in user
-            $securityContext = $this->get('security.context');
-            $user = $securityContext->getToken()->getUser();
-            $securityIdentity = UserSecurityIdentity::fromAccount($user);
+            $securityIdentity = UserSecurityIdentity::fromAccount($this->getUser());
 
             // grant owner access
             $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
+            $acl->setParentAcl($parentACL);
             $aclProvider->updateAcl($acl);
 
             return $this->redirect($this->generateUrl('post_show', array('id' => $entity->getId())));
@@ -141,12 +144,19 @@ class PostController extends Controller
             $acl = $aclProvider->createAcl($objectIdentity);
 
             // retrieving the security identity of the currently logged-in user
-            $securityContext = $this->get('security.context');
-            $user = $securityContext->getToken()->getUser();
-            $securityIdentity = UserSecurityIdentity::fromAccount($user);
+            $securityIdentity = UserSecurityIdentity::fromAccount($this->getUser());
 
             // grant owner access
             $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
+
+            // inherit acl from post
+            $parentACL = $aclProvider->findAcl($objectIdentity::fromDomainObject($entity));
+            $acl->setParentAcl($parentACL);
+
+            //deny access to post creator
+            $securityIdentity = UserSecurityIdentity::fromAccount($entity->getUser());
+            $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_DENY);
+
             $aclProvider->updateAcl($acl);
         }
 
@@ -188,6 +198,10 @@ class PostController extends Controller
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Post entity.');
+        }
+
+        if (false === $this->get('security.context')->isGranted('EDIT', $entity)) {
+            throw new AccessDeniedException();
         }
 
         $editForm = $this->createEditForm($entity);
@@ -232,6 +246,10 @@ class PostController extends Controller
             throw $this->createNotFoundException('Unable to find Post entity.');
         }
 
+        if (false === $this->get('security.context')->isGranted('EDIT', $entity)) {
+            throw new AccessDeniedException();
+        }
+
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
@@ -264,6 +282,10 @@ class PostController extends Controller
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Post entity.');
+            }
+
+            if (false === $this->get('security.context')->isGranted('DELETE', $entity)) {
+                throw new AccessDeniedException();
             }
 
             $aclProvider = $this->container->get('security.acl.provider');

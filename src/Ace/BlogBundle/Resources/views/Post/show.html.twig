@@ -25,11 +25,11 @@
             <p>{{ comment.content|nl2br }}</p>
 
             <p class="pull-right">
-                {% if is_granted('EDIT', comment) %}
+                {% if is_granted('EDIT', comment) and is_granted('DENY', comment) == false %}
                     <a class="btn btn-small btn-warning" href="{{ path('comment_edit', { 'id': comment.id, 'postId': entity.id }) }}">Edit comment</a>
                 {% endif %}
 
-                {% if is_granted('DELETE', comment) %}
+                {% if is_granted('DELETE', comment) and is_granted('DENY', comment) == false %}
                     <a class="btn btn-small btn-danger" href="{{ path('comment_delete', { 'id': comment.id, 'postId': entity.id }) }}">Delete comment</a>
                 {% endif %}
             </p>

@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Ace\BlogBundle\Entity\Comment;
 use Ace\BlogBundle\Form\CommentType;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Comment controller.
@@ -27,6 +28,10 @@ class CommentController extends Controller
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Comment entity.');
+        }
+
+        if (false === $this->get('security.context')->isGranted('EDIT', $entity)) {
+            throw new AccessDeniedException();
         }
 
         $editForm = $this->createEditForm($entity, $postId);
@@ -69,6 +74,10 @@ class CommentController extends Controller
             throw $this->createNotFoundException('Unable to find Comment entity.');
         }
 
+        if (false === $this->get('security.context')->isGranted('EDIT', $entity)) {
+            throw new AccessDeniedException();
+        }
+
         $editForm = $this->createEditForm($entity, $postId);
         $editForm->handleRequest($request);
 
@@ -98,6 +107,10 @@ class CommentController extends Controller
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Comment entity.');
+        }
+
+        if (false === $this->get('security.context')->isGranted('DELETE', $entity)) {
+            throw new AccessDeniedException();
         }
 
         $aclProvider = $this->container->get('security.acl.provider');

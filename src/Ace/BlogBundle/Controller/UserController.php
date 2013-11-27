@@ -7,11 +7,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Ace\BlogBundle\Entity\User;
 use Ace\BlogBundle\Form\UserType;
+use Ace\BlogBundle\Security\Acl\MaskBuilder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
-use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * User controller.
@@ -133,6 +134,10 @@ class UserController extends Controller
             throw $this->createNotFoundException('Unable to find User entity.');
         }
 
+        if (false === $this->get('security.context')->isGranted('ROLE_ADMIN')) {
+            throw new AccessDeniedException();
+        }
+
         $editForm = $this->createEditForm($entity);
 
         return $this->render('AceBlogBundle:User:edit.html.twig', array(
@@ -147,6 +152,10 @@ class UserController extends Controller
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find User entity.');
+        }
+
+        if ($this->getUser() != $entity) {
+            throw new AccessDeniedException();
         }
 
         $editForm = $this->createEditForm($entity);
@@ -189,6 +198,10 @@ class UserController extends Controller
             throw $this->createNotFoundException('Unable to find User entity.');
         }
 
+        if (false === $this->get('security.context')->isGranted('ROLE_ADMIN') && $this->getUser() != $entity) {
+            throw new AccessDeniedException();
+        }
+
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
@@ -222,6 +235,10 @@ class UserController extends Controller
             throw $this->createNotFoundException('Unable to find User entity.');
         }
 
+        if (false === $this->get('security.context')->isGranted('ROLE_ADMIN')) {
+            throw new AccessDeniedException();
+        }
+
         $em->remove($entity);
         $em->flush();
 
@@ -237,8 +254,8 @@ class UserController extends Controller
 
         $classes = array(
             'Ace\BlogBundle\Entity\User',
-            'Ace\BlogBundle\Entity\Post',
-            'Ace\BlogBundle\Entity\Comment',
+//            'Ace\BlogBundle\Entity\Post',
+//            'Ace\BlogBundle\Entity\Comment',
         );
 
         foreach($classes as $class) {
