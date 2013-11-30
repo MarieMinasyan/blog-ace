@@ -121,7 +121,6 @@ class PostController extends Controller
     public function showAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
-
         $newComment = new Comment();
         $commentForm   = $this->createNewCommentForm($newComment, $id);
         $commentForm->handleRequest($request);
@@ -142,7 +141,6 @@ class PostController extends Controller
             $aclProvider = $this->get('security.acl.provider');
             $objectIdentity = ObjectIdentity::fromDomainObject($newComment);
             $acl = $aclProvider->createAcl($objectIdentity);
-
             // retrieving the security identity of the currently logged-in user
             $securityIdentity = UserSecurityIdentity::fromAccount($this->getUser());
 
@@ -153,9 +151,11 @@ class PostController extends Controller
             $parentACL = $aclProvider->findAcl($objectIdentity::fromDomainObject($entity));
             $acl->setParentAcl($parentACL);
 
-            //deny access to post creator
-            $securityIdentity = UserSecurityIdentity::fromAccount($entity->getUser());
-            $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_DENY);
+            //deny access to post creator if he isn't the comment author
+            if ($entity->getUser()->getId() != $this->getUser()->getId()) {
+                $securityIdentity = UserSecurityIdentity::fromAccount($entity->getUser());
+                $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_DENY);
+            }
 
             $aclProvider->updateAcl($acl);
         }
