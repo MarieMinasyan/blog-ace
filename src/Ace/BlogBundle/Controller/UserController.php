@@ -53,8 +53,14 @@ class UserController extends Controller
             $password = $encoder->encodePassword($form->get('password')->getData(), $entity->getSalt());
             $entity->setPassword($password);
 
-            // save
             $em = $this->getDoctrine()->getManager();
+
+            if (empty($entity->getUserRoles())) {
+                $roleUser = $em->getRepository('AceBlogBundle:Role')->findOneByName('ROLE_USER');
+                $entity->setUserRoles(array($roleUser));
+            }
+
+            // save
             $em->persist($entity);
             $em->flush();
 
