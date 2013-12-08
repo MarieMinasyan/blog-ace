@@ -14,4 +14,6 @@ use Symfony\Component\Security\Acl\Permission\MaskBuilder as BaseMaskBuilder;
 class MaskBuilder extends BaseMaskBuilder
 {
     const MASK_DENY = 256; // 1 << 8
+    const MASK_PUBLISH = 512; // 1 << 9
+    const MASK_UNPUBLISH = 1024; // 1 << 10
 }
